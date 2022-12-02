@@ -113,19 +113,19 @@
                     <div class="col-md-8">
                         <input class="form-control" type="text" placeholder="Şirket adı giriniz" name="txtCompanyName" id="txtCompanyName">
                     </div>
-                </div> 
+                </div>
                 <div class="mb-3 row">
                     <label for="txtCompanyDescription" class="col-md-4 col-form-label">Şirket Açıklaması</label>
                     <div class="col-md-8">
                         <input class="form-control" type="text" placeholder="Şirket Hakkında Açıklama" name="txtCompanyDescription" id="txtCompanyDescription">
                     </div>
-                </div>  
+                </div>
                 <div class="mb-3 row">
                     <label for="txtPosition" class="col-md-4 col-form-label">Pozisyon Adı</label>
                     <div class="col-md-8">
                         <input class="form-control" type="text" placeholder="Pozisyon adı giriniz" name="txtPosition" id="txtPosition">
                     </div>
-                </div> 
+                </div>
                 <div class="mb-3 row">
                     <label for="txtPositionDescription" class="col-md-4 col-form-label">Pozisyon Hakkında Açıklama Giriniz</label>
                     <div class="col-md-8">
@@ -193,14 +193,29 @@
             _dataTable = dataTable;
         }
 
-        $("#btnConfirm").on('click',function(event){
+        $("#btnConfirm").on('click', function (event) {
+
+            var checkbox = $("#continousDate").is(':checked');
+            var endDate;
+            if (checkbox == true) {
+                endDate == null;
+            } else
+            {
+                endDate = $("#dateEnded").val();
+            }
+
             var veri = {
-            name: $("#txtExpName").val(),
-            startingDate:$("#")
+                name: $("#txtExpName").val(),
+                startingDate: $("#dateStarted").val(),
+                endingDate:endDate,
+                location:$("#city option:selected").text(),
+                companyName :$("#txtCompanyName").val(),
+                companyDescription:$("#txtCompanyDescription").val(),
+
             };
-            
+
             $.ajax({
-            
+
             });
         });
 
