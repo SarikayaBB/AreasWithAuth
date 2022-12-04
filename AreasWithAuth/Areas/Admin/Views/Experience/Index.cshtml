@@ -31,7 +31,7 @@
             <div class="card-body">
 
                 <h4 class="card-title">Tecrübeler</h4>
-                <button type="button" class="btn btn-success waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#modal">Yeni Ekle</button>
+                <button type="button" class="btn btn-success waves-effect waves-light" onclick="addExperience()" data-bs-toggle="modal" data-bs-target="#modal">Yeni Ekle</button>
                 <p class="card-title-desc">
                     Bu ekranda iş tecrübelerinizi ekleyebilir ve düzenleyebilirsiniz.
                 </p>
@@ -211,7 +211,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-light waves-effect" data-bs-dismiss="modal">Kapat</button>
+                <button type="button" id="btnCancel"  class="btn btn-light waves-effect" data-bs-dismiss="modal">Kapat</button>
                 <button type="button" id="btnConfirm" class="btn btn-primary waves-effect waves-light">Ekle</button>
             </div>
         </div><!-- /.modal-content -->
@@ -240,8 +240,10 @@
         $(document).ready(function () {
             $("#continousDate").change(function () {
                 if ($(this).is(':checked')) {
+                    $("#dateEnded").val('');
                     $("#dateEnded").attr("readonly", true);
                 } else {
+
                     $("#dateEnded").attr("readonly", false);
                 }
             });
@@ -271,51 +273,54 @@
             _DataTable = dataTable;
         }
 
-        $("#btnConfirm").on('click', function (event) {
-            var checkbox = $("#continousDate").is(':checked');
-            var endDate;
-            if (checkbox == true) {
-                endDate == null;
-            } else {
-                endDate = $("#dateEnded").val();
-            }
-            if ($("#txtExpName").val().length > 3 && $("#dateStarted").val() != null && $("#txtCompanyName").val().length > 3 && $("#txtCompanyDescription").val().length > 3 && $("#txtPosition").val().length > 3 && $("#txtPositionDescription").val().length > 3) {
-                var veri = {
-                    name: $("#txtExpName").val(),
-                    startingDate: $("#dateStarted").val(),
-                    endingDate: endDate,
-                    location: $("#city option:selected").text(),
-                    companyName: $("#txtCompanyName").val(),
-                    companyDescription: $("#txtCompanyDescription").val(),
-                    position: $("#txtPosition").val(),
-                    positionDescription: $("#txtPositionDescription").val()
-                };
-                console.log(veri);
-                $.ajax({
-                    type: "POST",
-                    url: "@Url.Action("AddExperience","Experience")",
-                    data: veri,
-                    success: function (res) {
-                        $("#txtExpName").val(''),
-                            $("#dateStarted").val('');
-                        $("#dateEnded").val('');
-                        $("#txtCompanyName").val('');
-                        $("#txtCompanyDescription").val('');
-                        $("#txtPosition").val('');
-                        $("#txtPositionDescription").val('');
-                        _DataTable.ajax.reload();
-                        $("#modal").modal('hide');
-                    }
-                });
-            }
-            else {
-                /// toastr/swal...
-            }
-        });
 
+        function addExperience() {
+            $("#btnConfirm").off("click");
+            $("#btnConfirm").on('click', function (event) {
+                var checkbox = $("#continousDate").is(':checked');
+                var endDate;
+                if (checkbox == true) {
+                    endDate == null;
+                } else {
+                    endDate = $("#dateEnded").val();
+                }
+                if ($("#txtExpName").val().length > 3 && $("#dateStarted").val() != null && $("#txtCompanyName").val().length > 3 && $("#txtCompanyDescription").val().length > 3 && $("#txtPosition").val().length > 3 && $("#txtPositionDescription").val().length > 3) {
+                    var veri = {
+                        name: $("#txtExpName").val(),
+                        startingDate: $("#dateStarted").val(),
+                        endingDate: endDate,
+                        location: $("#city option:selected").text(),
+                        companyName: $("#txtCompanyName").val(),
+                        companyDescription: $("#txtCompanyDescription").val(),
+                        position: $("#txtPosition").val(),
+                        positionDescription: $("#txtPositionDescription").val()
+                    };
+                    console.log(veri);
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("AddExperience","Experience")",
+                        data: veri,
+                        success: function (res) {
+                            $("#txtExpName").val(''),
+                                $("#dateStarted").val('');
+                            $("#dateEnded").val('');
+                            $("#txtCompanyName").val('');
+                            $("#txtCompanyDescription").val('');
+                            $("#txtPosition").val('');
+                            $("#txtPositionDescription").val('');
+                            _DataTable.ajax.reload();
+                            $("#modal").modal('hide');
+                        }
+                    });
+                }
+                else {
+                    /// toastr/swal...
+                }
+            });
+        }
         function deleteExperience(id) {
             var veri = {
-            id:id
+                id: id
             };
             $.ajax({
                 type: "POST",
@@ -327,7 +332,91 @@
             });
         }
 
+        function editExperience(id) {
+            var veri = { id: id };
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("FindById","Experience")",
+                data: veri,
+                success: function (res) {
+                    $("#modal").modal('show');
+                    $("#txtExpName").val(res.name);
+                    $("#dateStarted").val(res.startingDate.slice(0, 10));
+                    if (res.endingDate != null) {
+                        $("#dateEnded").val(res.endingDate.slice(0, 10));
+                    } else {
+                        $("#dateEnded").val('');
+                    }
+                    $("#city option:selected").text(res.location);
+                    $("#txtCompanyName").val(res.companyName);
+                    $("#txtCompanyDescription").val(res.companyDescription);
+                    $("#txtPosition").val(res.position);
+                    $("#txtPositionDescription").val(res.positionDescription);
 
+                    $("#btnConfirm").html("Düzenle");
+                    $("#btnConfirm").off("click");
+
+                    $("#btnCancel").one('click',function(event){
+                        $("#txtExpName").val(''),
+                        $("#dateStarted").val('');
+                        $("#dateEnded").val('');
+                        $("#txtCompanyName").val('');
+                        $("#txtCompanyDescription").val('');
+                        $("#txtPosition").val('');
+                        $("#txtPositionDescription").val('');
+                        $("#btnConfirm").html("Ekle");
+                    
+                    });
+
+                    $("#btnConfirm").on('click', function (event) {
+                        var checkbox = $("#continousDate").is(':checked');
+                        var endDate;
+                        if (checkbox == true) {
+                            endDate == null;
+                        } else {
+                            endDate = $("#dateEnded").val();
+                        }
+                        var veriEdit = {
+                            id: id,
+                            name: $("#txtExpName").val(),
+                            startingDate: $("#dateStarted").val(),
+                            endingDate: endDate,
+                            location: $("#city option:selected").text(),
+                            companyName: $("#txtCompanyName").val(),
+                            companyDescription: $("#txtCompanyDescription").val(),
+                            position: $("#txtPosition").val(),
+                            positionDescription: $("#txtPositionDescription").val()
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("EditExperience","Experience")",
+                            data: veriEdit,
+                            success: function (resEdit) {
+                                $("#modal").modal('hide');
+                                $("#txtExpName").val(''),
+                                $("#dateStarted").val('');
+                                $("#dateEnded").val('');
+                                $("#txtCompanyName").val('');
+                                $("#txtCompanyDescription").val('');
+                                $("#txtPosition").val('');
+                                $("#txtPositionDescription").val('');
+                                _DataTable.ajax.reload();
+                                $("#modal").modal('hide');
+                                $("#btnConfirm").html("Ekle");
+                                _DataTable.ajax.reload();
+                            }
+
+                        });
+
+                    });
+
+
+
+                }
+
+            });
+        }
 
     </script>
 }

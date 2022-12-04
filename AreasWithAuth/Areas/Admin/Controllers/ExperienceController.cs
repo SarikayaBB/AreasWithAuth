@@ -72,5 +72,38 @@ namespace AreasWithAuth.Web.Areas.Admin.Controllers
             }
             return Json(experience.ToString());
         }
+    
+        
+        [Authorize(Roles = "Admin")]
+        public IActionResult FindById(Experience experience)
+        {
+            Experience foundExperience = _db.Experiences.FirstOrDefault(e => e.Id == experience.Id);
+            if (foundExperience != null)
+            {
+                return Json(foundExperience);
+            }
+            else
+            {
+                return Json(null);
+            }
+        }
+
+        [Authorize(Roles = "Admin")]
+        public IActionResult EditExperience(Experience experience)
+        {
+            Experience foundExperience = _db.Experiences.FirstOrDefault(ex=>ex.Id== experience.Id);
+            foundExperience.StartingDate = experience.StartingDate;
+            foundExperience.EndingDate= experience.EndingDate;
+            foundExperience.CompanyName = experience.CompanyName;
+            foundExperience.CompanyDescription = experience.CompanyDescription;
+            foundExperience.Location = experience.Location;
+            foundExperience.Name = experience.Name;
+            foundExperience.Position= experience.Position;
+            foundExperience.PositionDescription= experience.PositionDescription;
+            foundExperience.DateModified = DateTime.Now;
+            _db.Update(foundExperience);
+            _db.SaveChanges();
+            return Json(foundExperience);
+        }
     }
 }
