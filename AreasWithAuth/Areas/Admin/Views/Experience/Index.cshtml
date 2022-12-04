@@ -209,9 +209,6 @@
                         <input class="form-control" type="text" placeholder="İş açıklaması giriniz" name="txtPositionDescription" id="txtPositionDescription">
                     </div>
                 </div>
-
-
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-light waves-effect" data-bs-dismiss="modal">Kapat</button>
@@ -240,12 +237,6 @@
 
     <script type="text/javascript">
         var _DataTable;
-
-
-
-
-
-
         $(document).ready(function () {
             $("#continousDate").change(function () {
                 if ($(this).is(':checked')) {
@@ -254,12 +245,9 @@
                     $("#dateEnded").attr("readonly", false);
                 }
             });
-
             loadTable();
         });
-
         function loadTable() {
-
             var dataTable = $("#datatable").DataTable(
                 {
                     ajax: "@Url.Action("GetAll","Experience")",
@@ -280,13 +268,10 @@
                     ]
                 }
             );
-
             _DataTable = dataTable;
-
         }
 
         $("#btnConfirm").on('click', function (event) {
-
             var checkbox = $("#continousDate").is(':checked');
             var endDate;
             if (checkbox == true) {
@@ -327,5 +312,22 @@
                 /// toastr/swal...
             }
         });
+
+        function deleteExperience(id) {
+            var veri = {
+            id:id
+            };
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteExperience","Experience")",
+                data: veri,
+                success: function (res) {
+                    _DataTable.ajax.reload();
+                }
+            });
+        }
+
+
+
     </script>
 }

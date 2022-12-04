@@ -24,7 +24,7 @@ namespace AreasWithAuth.Web.Areas.Admin.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult GetAll()
         {
-            return Json(new { data = _db.Experiences.OrderBy(e=>e.DateModified).ToList() });
+            return Json(new { data = _db.Experiences.OrderBy(e => e.DateModified).ToList() });
         }
         [Authorize(Roles = "Admin")]
         public IActionResult AddExperience(Experience experience)
@@ -51,6 +51,26 @@ namespace AreasWithAuth.Web.Areas.Admin.Controllers
             {
                 return Json(err);
             }
+        }
+
+
+        [Authorize(Roles = "Admin")]
+        public IActionResult DeleteExperience(Experience experience)
+        {
+            try
+            {
+                Experience deletedExperience = _db.Experiences.Find(experience.Id);
+                if (deletedExperience != null)
+                {
+                    _db.Remove(deletedExperience);
+                    _db.SaveChanges();
+                }
+            }
+            catch (Exception err)
+            {
+                return Json(err);
+            }
+            return Json(experience.ToString());
         }
     }
 }
