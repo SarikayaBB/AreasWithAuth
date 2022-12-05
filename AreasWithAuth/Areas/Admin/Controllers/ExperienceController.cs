@@ -24,8 +24,12 @@ namespace AreasWithAuth.Web.Areas.Admin.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult GetAll()
         {
-            return Json(new { data = _db.Experiences.OrderBy(e => e.DateModified).ToList() });
+            List<Experience> list = _db.Experiences.OrderBy(e => e.DateModified).ToList();
+            return Json(new { data = list });
         }
+
+
+
         [Authorize(Roles = "Admin")]
         public IActionResult AddExperience(Experience experience)
         {
@@ -72,8 +76,8 @@ namespace AreasWithAuth.Web.Areas.Admin.Controllers
             }
             return Json(experience.ToString());
         }
-    
-        
+
+
         [Authorize(Roles = "Admin")]
         public IActionResult FindById(Experience experience)
         {
@@ -91,15 +95,15 @@ namespace AreasWithAuth.Web.Areas.Admin.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult EditExperience(Experience experience)
         {
-            Experience foundExperience = _db.Experiences.FirstOrDefault(ex=>ex.Id== experience.Id);
+            Experience foundExperience = _db.Experiences.FirstOrDefault(ex => ex.Id == experience.Id);
             foundExperience.StartingDate = experience.StartingDate;
-            foundExperience.EndingDate= experience.EndingDate;
+            foundExperience.EndingDate = experience.EndingDate;
             foundExperience.CompanyName = experience.CompanyName;
             foundExperience.CompanyDescription = experience.CompanyDescription;
             foundExperience.Location = experience.Location;
             foundExperience.Name = experience.Name;
-            foundExperience.Position= experience.Position;
-            foundExperience.PositionDescription= experience.PositionDescription;
+            foundExperience.Position = experience.Position;
+            foundExperience.PositionDescription = experience.PositionDescription;
             foundExperience.DateModified = DateTime.Now;
             _db.Update(foundExperience);
             _db.SaveChanges();
